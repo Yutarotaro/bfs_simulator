@@ -1,3 +1,3 @@
 # bfs_simulator
 
-Look at this page git@github.com:Yutarotaro/bfs_simulator.git
+Look at this page https://yutarotaro.github.io/bfs_simulator/
