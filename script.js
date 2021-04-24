@@ -48,7 +48,7 @@
         // カメラを作成
         const camera = new THREE.PerspectiveCamera(45, width / height);
         var rate = 1.2;
-        camera.position.set(-250 * rate, 500 * rate, 1000 * rate);
+        camera.position.set(-250 * rate, 800 * rate, 1000 * rate);
         //camera.lookAt(new THREE.Vector3(0, 0, 0));
 
         // カメラコントローラーを作成
@@ -77,31 +77,39 @@
         const basic_material = new THREE.MeshBasicMaterial({color: 0xff0000});
         const obstacle_geometry = new THREE.BoxGeometry(box_size, box_size, box_size / 2);
 
-        const pl = new Array(5);
-
-        for(let i = 0; i < 5;++i){
-          pl[i] = new Obj(obstacle_geometry, basic_material, scene);
-          pl[i].pos(new Point(-100 * (i + 1/2), 25,-250));
-        }
-
-        /*
-
+        //obstacleの情報
         var map = new Array(grid_step);
         for(let y = 0; y < grid_step; y++) {
           map[y] = new Array(grid_step).fill(0);
         }
 
-        var start = Pair(0,0);
-        var goal = Pair(grid_step - 1,grid_step - 1);
+        const ob_list = [1,2,3,4,5,8,9,
+                        11,12,14,16,
+                        21,
+                        32, 33,
+                        40, 42, 44, 47,
+                        50,
+                        61, 62, 63];
+        const pl = new Array(ob_list.length);
+        console.log(ob_list.length);
 
-        const obstacle_mesh = new THREE.Mesh(obstacle_geometry, basic_material);
-        obstacle_mesh.rotation.set(Math.PI / 2 , 0, 0);
-        obstacle_mesh.position.set(-(grid_size - box_size)/2, box_size/4, (grid_size - box_size)/2);
-        obstacle_mesh.position.x += box_size;
+        for(let i = 0; i < ob_list.length;++i){
+          pl[i] = new Obj(obstacle_geometry, basic_material, scene);
+          const ob_x = Math.floor(ob_list[i] / grid_step) - 5;
+          const ob_z = ob_list[i] % grid_step - 5;
 
-        scene.add(obstacle_mesh);
+          pl[i].pos(new Point(box_size * (ob_x + 1/2), box_size / 4, -box_size * (ob_z + 1/2)));
 
-        */
+          map[ob_x + 5][ob_z + 5] = 1;
+        }
+
+
+
+        let now_direction = 1;
+
+        var start = new Pair(0,0);
+        var goal =  new Pair(grid_step - 1,grid_step - 1);
+
         const GL = new Obj(obstacle_geometry, new THREE.MeshBasicMaterial({color: 0x0000ff}), scene);
         GL.pos(new Point((grid_size - box_size)/2, box_size / 4 , -(grid_size - box_size)/2));
 
@@ -109,27 +117,33 @@
         var q = new Queue();
 
         
-        var dx = 0.03;
-        let i = 5;
-        var j = 0;
+        var ct = 0;
+
+        let a = Math.floor(grid_step / 2) * 100 - Math.floor(box_size / 2);
+
+        let i = 0, j = 0;
 
         tick();
 
-        var flag = 1;
+        var now = new Pair(start.x, start.y);
+
+        
+
 
         // 毎フレーム時に実行されるループイベントです
         function tick() {
-          i -= dx;
-          j += 0.02;
+          i -= dx[now_direction];
+          j -= dy[now_direction];
 
-          if(Math.abs(i - 0.5) > 4.52){
-            dx *= -1.;
+
+          agent.pos(new Point(-a + i * box_size / 100, box_size / 2 ,a + j * box_size / 100));
+
+          if(i % box_size == 0 && j % box_size == 0){
+            while(map[Math.floor((i + dx[now_direction])/box_size)][Math.floor((j + dy[now_direction])/box_size)] == 1  ){
+              now_direction += 1;
+              now_direction %= 4;
+            }
           }
-          agent.pos(new Point(-box_size * (i - 0.5) , box_size / 2 , (grid_size - box_size)/2));
-
-        
-//          agent.moveTo();
-          
 
           // カメラコントローラーを更新
           controls.update();

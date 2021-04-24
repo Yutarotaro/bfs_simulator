@@ -38,26 +38,26 @@ function Point(x, y, z) {
     this.x = x;
     this.y = y;
     this.z = z;
-  /*
-    this.equals = function (p) {
-      return (this.x == p.x && this.y == this.y);
-    }
-
-
-    this.print = function(){
-      console.log(this.x);
-      console.log(this.y);
-    }
-
-    this.inc = function () {
-      this.x++;
-      this.y++;
-    }
-    */
 }
 
 
+const Pair = class{
+  constructor(x,y){
+    this.x = x;
+    this.y = y;
+  }
 
+  get _x(){
+    return this.x;
+  }
+
+  get _y(){
+    return this.y;
+  }
+}
+
+
+/*
 function Pair(x, y) {
     this._x = x;
     this._y = y;
@@ -82,7 +82,7 @@ function Pair(x, y) {
       this._x++;
       this._y++;
     }
-}
+}*/
 
 function sleep(waitMsec) {
     var startMsec = new Date();
